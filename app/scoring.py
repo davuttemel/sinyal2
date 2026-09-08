@@ -21,13 +21,16 @@ def score(symbol: str, df, flow: FlowSnapshot, kap: list[KapItem] | None = None)
     flows = flow.money_flow[-3:]
     positive_days = sum(v > 0 for v in flows)
     if positive_days == 3:
-        points += 2
-        reasons.append("3/3 gün pozitif para akışı")
+        points += 1 if flow.flow_source == "signed_volume_proxy" else 2
+        label = "3/3 gün pozitif para akışı"
+        if flow.flow_source == "signed_volume_proxy":
+            label += " (hacim proxy)"
+        reasons.append(label)
     elif positive_days == 2:
-        points += 1
+        points += 0.5 if flow.flow_source == "signed_volume_proxy" else 1
         reasons.append("2/3 gün pozitif para akışı")
     elif positive_days == 0:
-        points -= 2
+        points -= 1 if flow.flow_source == "signed_volume_proxy" else 2
         reasons.append("3/3 gün negatif para akışı")
 
     if last.vol_ratio >= 2.0:
