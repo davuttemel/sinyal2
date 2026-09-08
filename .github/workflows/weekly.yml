@@ -1,0 +1,26 @@
+name: Weekly BIST Scan
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:30 Europe/Istanbul = 04:30 UTC
+    - cron: '30 4 * * 1'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Run weekly scan
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MATRIKS_API_BASE_URL: ${{ secrets.MATRIKS_API_BASE_URL }}
+          MATRIKS_API_KEY: ${{ secrets.MATRIKS_API_KEY }}
+          KAP_API_BASE_URL: ${{ secrets.KAP_API_BASE_URL }}
+          KAP_API_KEY: ${{ secrets.KAP_API_KEY }}
+        run: python -m app.main
