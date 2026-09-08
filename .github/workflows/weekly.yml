@@ -1,0 +1,25 @@
+name: Weekly BIST Scan
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:30 Europe/Istanbul = 04:30 UTC while Turkey is UTC+3.
+    - cron: '30 4 * * 1'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run weekly scan
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MIN_SCORE: '7'
+          MAX_PICKS: '3'
+        run: python -m app.main
