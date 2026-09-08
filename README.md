@@ -43,11 +43,11 @@ Varsayılan minimum kalite skoru: **7**.
 
 ## Veri kaynakları ve sınırlar
 
-Borsa İstanbul, piyasa verilerinin gerçek zamanlı, gecikmeli ve gün sonu biçimlerinde lisanslı veri dağıtıcılar üzerinden yayıldığını belirtiyor. BIST ayrıca bazı tarihsel/piyasa veri ürünlerini kendi veri sayfalarında listeliyor. citeturn0search0turn0search12
+Borsa İstanbul piyasa verilerinin gerçek zamanlı, gecikmeli ve gün sonu biçimlerinde lisanslı veri dağıtıcılar üzerinden yayımlandığını belirtiyor. Bazı tarihsel ve piyasa veri ürünleri de Borsa İstanbul'un veri sayfalarında listeleniyor.
 
-KAP, şirket bildirimlerinin kamuya açık elektronik sistemi ve tarihsel arşividir. Resmi KAP REST Veri Yayın Servisi ise abonelik, yetkilendirme ve API anahtarı gerektirir. citeturn2search12turn2search24
+KAP, şirket bildirimlerinin kamuya açık elektronik sistemi ve tarihsel arşividir. Resmi KAP REST Veri Yayın Servisi ise abonelik, yetkilendirme ve API anahtarı gerektirir.
 
-Yahoo/yfinance tarafı araştırma amaçlı kullanılmalıdır; yfinance dokümantasyonu Yahoo verisinin kişisel kullanım şartlarına tabi olduğunu özellikle belirtiyor. citeturn3search5
+Yahoo/yfinance tarafı araştırma amaçlı kullanılmalıdır; yfinance dokümantasyonu Yahoo verisinin kişisel kullanım şartlarına tabi olduğunu özellikle belirtiyor.
 
 Bu nedenle API'siz sürüm **araştırma/backtest/izleme** amaçlıdır; lisanslı veri erişimi olmadan kurumsal maliyet veya gerçek AKD verisi varmış gibi davranmaz.
 
