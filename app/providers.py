@@ -41,14 +41,27 @@ class YahooProvider(MarketDataProvider):
             EquityQuery("eq", ["region", "tr"]),
             EquityQuery("eq", ["exchange", "IST"]),
         ])
-        response = yf.screen(query, size=250, sortField="dayvolume", sortAsc=False)
-        quotes = response.get("quotes", [])
-        symbols = []
-        for quote in quotes:
-            symbol = str(quote.get("symbol", ""))
-            if symbol.endswith(".IS"):
-                symbols.append(symbol.removesuffix(".IS"))
-        return sorted(set(symbols))
+        symbols: set[str] = set()
+        offset = 0
+        while offset < 1500:
+            response = yf.screen(
+                query,
+                offset=offset,
+                size=250,
+                sortField="dayvolume",
+                sortAsc=False,
+            )
+            quotes = response.get("quotes", [])
+            if not quotes:
+                break
+            for quote in quotes:
+                symbol = str(quote.get("symbol", ""))
+                if symbol.endswith(".IS"):
+                    symbols.add(symbol.removesuffix(".IS"))
+            if len(quotes) < 250:
+                break
+            offset += 250
+        return sorted(symbols)
 
     @staticmethod
     def _ticker(symbol: str) -> str:
