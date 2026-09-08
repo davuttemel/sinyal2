@@ -1,0 +1,1 @@
+"""BIST weekly signal bot."""
