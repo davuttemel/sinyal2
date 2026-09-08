@@ -2,29 +2,26 @@ import os
 
 from dotenv import load_dotenv
 
-from .providers import MatriksProvider, ProviderConfig
+from .providers import YahooProvider
 from .scoring import score
 from .telegram import format_report, send
 
 
 def main() -> None:
     load_dotenv()
-
-    provider = MatriksProvider(
-        ProviderConfig(
-            base_url=os.getenv("MATRIKS_API_BASE_URL", ""),
-            api_key=os.getenv("MATRIKS_API_KEY", ""),
-        )
-    )
-
+    provider = YahooProvider()
     candidates = []
+
     for symbol in provider.symbols():
-        df = provider.daily(symbol)
-        flow = provider.flow(symbol)
-        kap = provider.kap(symbol)
-        candidate = score(symbol, df, flow, kap)
-        if candidate and candidate.score >= float(os.getenv("MIN_SCORE", "7")):
-            candidates.append(candidate)
+        try:
+            df = provider.daily(symbol)
+            flow = provider.flow(symbol)
+            kap = provider.kap(symbol)
+            candidate = score(symbol, df, flow, kap)
+            if candidate and candidate.score >= float(os.getenv("MIN_SCORE", "7")):
+                candidates.append(candidate)
+        except Exception as exc:
+            print(f"{symbol}: veri alınamadı: {exc}")
 
     candidates.sort(key=lambda c: c.score, reverse=True)
     picks = candidates[: int(os.getenv("MAX_PICKS", "3"))]
