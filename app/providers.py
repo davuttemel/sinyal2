@@ -29,12 +29,10 @@ class ProviderConfig:
 
 
 class YahooProvider(MarketDataProvider):
-    """API-free research provider using Yahoo Finance/yfinance.
+    """API-free research provider using Yahoo Finance/yfinance."""
 
-    Yahoo identifies Borsa Istanbul equities with the .IS suffix. The provider
-    deliberately labels its signed-volume calculation as a proxy; it is not
-    broker-level AKD or institutional money flow.
-    """
+    def __init__(self) -> None:
+        self._daily_cache: dict[str, pd.DataFrame] = {}
 
     def symbols(self) -> list[str]:
         query = EquityQuery("and", [
@@ -68,6 +66,8 @@ class YahooProvider(MarketDataProvider):
         return symbol if symbol.endswith(".IS") else f"{symbol}.IS"
 
     def daily(self, symbol: str) -> pd.DataFrame:
+        if symbol in self._daily_cache:
+            return self._daily_cache[symbol].copy()
         data = yf.Ticker(self._ticker(symbol)).history(
             period="2y",
             interval="1d",
@@ -81,7 +81,9 @@ class YahooProvider(MarketDataProvider):
         missing = [c for c in required if c not in data.columns]
         if missing:
             raise ValueError(f"Eksik OHLCV alanları: {missing}")
-        return data[required].dropna()
+        cleaned = data[required].dropna()
+        self._daily_cache[symbol] = cleaned
+        return cleaned.copy()
 
     def flow(self, symbol: str) -> FlowSnapshot:
         data = self.daily(symbol).tail(20).copy()
