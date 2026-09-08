@@ -4,16 +4,19 @@ from dotenv import load_dotenv
 
 from .providers import MatriksProvider, ProviderConfig
 from .scoring import score
+from .telegram import format_report, send
 
 
 def main() -> None:
     load_dotenv()
+
     provider = MatriksProvider(
         ProviderConfig(
             base_url=os.getenv("MATRIKS_API_BASE_URL", ""),
             api_key=os.getenv("MATRIKS_API_KEY", ""),
         )
     )
+
     candidates = []
     for symbol in provider.symbols():
         df = provider.daily(symbol)
@@ -26,12 +29,15 @@ def main() -> None:
     candidates.sort(key=lambda c: c.score, reverse=True)
     picks = candidates[: int(os.getenv("MAX_PICKS", "3"))]
 
-    if not picks:
-        print("BIST haftalık tarama: işlem yok.")
-        return
+    report = format_report(picks)
+    print(report)
 
-    for pick in picks:
-        print(f"{pick.symbol}: {pick.score} | {pick.price} | {', '.join(pick.reasons)}")
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID", "")
+    if token and chat_id:
+        send(report, token, chat_id)
+    else:
+        print("Telegram credentials yok; bildirim gönderilmedi.")
 
 
 if __name__ == "__main__":
