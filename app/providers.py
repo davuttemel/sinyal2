@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 import yfinance as yf
+from yfinance import EquityQuery
 
 from .models import FlowSnapshot, KapItem
 
@@ -36,9 +37,9 @@ class YahooProvider(MarketDataProvider):
     """
 
     def symbols(self) -> list[str]:
-        query = yf.EquityQuery("and", [
-            yf.EquityQuery("eq", ["region", "tr"]),
-            yf.EquityQuery("eq", ["exchange", "IST"]),
+        query = EquityQuery("and", [
+            EquityQuery("eq", ["region", "tr"]),
+            EquityQuery("eq", ["exchange", "IST"]),
         ])
         response = yf.screen(query, size=250, sortField="dayvolume", sortAsc=False)
         quotes = response.get("quotes", [])
@@ -72,7 +73,6 @@ class YahooProvider(MarketDataProvider):
     def flow(self, symbol: str) -> FlowSnapshot:
         data = self.daily(symbol).tail(20).copy()
         spread = (data.high - data.low).replace(0, pd.NA)
-        # Close-location value * volume: signed-volume proxy.
         clv = ((2 * data.close - data.high - data.low) / spread).fillna(0)
         money_flow = (clv * data.volume).tolist()
         return FlowSnapshot(
@@ -81,8 +81,7 @@ class YahooProvider(MarketDataProvider):
         )
 
     def kap(self, symbol: str) -> list[KapItem]:
-        # KAP official API requires a licensed integration. We do not pretend
-        # Yahoo news is KAP data, so the default provider returns no KAP items.
+        # Do not pretend Yahoo news is KAP data.
         return []
 
 
