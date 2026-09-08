@@ -60,7 +60,8 @@ def format_report(picks: list[Candidate]) -> str:
     body = "\n\n".join(format_pick(pick) for pick in picks)
     footer = (
         "\n\n<i>Bu mesaj yatırım tavsiyesi değildir. "
-        "Sistem teknik, para akışı, kurumsal veri ve KAP filtrelerini "
-        "birlikte değerlendirir.</i>"
+        "API'siz modda para akışı signed-volume proxy'dir; "
+        "kurumsal maliyet/oran ve KAP verisi yalnızca ilgili veri kaynağı "
+        "mevcutsa skora dahil edilir.</i>"
     )
     return f"{header}\n\n{body}{footer}"
